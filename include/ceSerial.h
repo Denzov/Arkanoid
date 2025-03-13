@@ -60,7 +60,7 @@ public:
 	~ceSerial();
 	long Open(void);//return 0 if success
 	void Close();
-	char ReadChar(bool& success);//return read char if success
+	char ReadChar();//return read char if success
 	bool WriteChar(const char ch);////return success flag
 	bool Write(const char *data);//write null terminated string and return success flag
 	bool Write(const char *data, uint16_t n);
@@ -339,8 +339,8 @@ inline bool ceSerial::WriteChar(const char ch) {
 	return Write(s);
 }
 
-inline char ceSerial::ReadChar(bool& success) {
-	success = false;
+inline char ceSerial::ReadChar() {
+	bool success = false;
 	if (!IsOpened()) {return 0;}
 
 	DWORD dwRead;
