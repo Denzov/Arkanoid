@@ -6,9 +6,9 @@
 #include <thread>
 #include <chrono>
 #include <ctime>
-#include <atomic>
 
 #include "Config.cam.h"
+#include "PIreg.h"
 
 enum DEBUG_KEY_STATES{
     REQ_GET_MOUSE_POS = 'k',
@@ -24,13 +24,18 @@ struct CameraConnectionParams{
 
     cv::VideoCapture* cap;
 
-    cv::Scalar _hsv_left_range_begin;
-    cv::Scalar _hsv_left_range_end;
+    cv::Scalar _ball_hsv_left_range_begin;
+    cv::Scalar _ball_hsv_left_range_end;
 
-    cv::Scalar _hsv_right_range_begin;
-    cv::Scalar _hsv_right_range_end;
+    cv::Scalar _ball_hsv_right_range_begin;
+    cv::Scalar _ball_hsv_right_range_end;
 
-    cv::Mat kernel;
+    cv::Mat _ball_kernel;
+
+    cv::Scalar _robot_hsv_range_begin;
+    cv::Scalar _robot_hsv_range_end;
+
+    cv::Mat _robot_kernel;
 };
 
 class Camera : private CameraConnectionParams{
@@ -47,10 +52,15 @@ private:
 
     cv::Mat _cur_frame,
             _hsv_frame,
+
             _ball_mask,
-            _from_hsv_ball_mask_left,
-            _from_hsv_ball_mask_right,
-            _conc_ball_mask;
+            _ball_from_hsv_mask_left,
+            _ball_from_hsv_mask_right,
+            _ball_conc_mask,
+            
+            _robot_from_hsv_mask,
+            _robot_mask
+            ;
     
     float _prev_ball_pos_x = 0;
     float _prev_ball_pos_y = 0;
@@ -61,8 +71,23 @@ private:
     float _ball_speed_x = 0;
     float _ball_speed_y = 0;
     
+
+    float _dt_ms = 0;
+    std::clock_t _cur_time = 0;
+    std::clock_t _prev_time = 0;
+
+    void working_with_frame();
+    void calc_ball_pos();
+    void calc_dt();
+    void calc_ball_speed();
+    
 public:
     Camera(CameraConnectionParams* ccp) : CameraConnectionParams(*ccp){}
+
+    const std::clock_t& CUR_TIME = _cur_time;
+    const std::clock_t& PREV_TIME = _prev_time;
+
+    Camera& UpdateTime();
 
     void Init();
     void DebugPrintsHandler();

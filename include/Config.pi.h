@@ -2,11 +2,11 @@
 #define _PI_REG_H_
 
 /*==PI COEFFICIENTS==*/
-#define KP 1.f
-#define KI 1.f
+#define KP (1.f)
+#define KI (1.f)
 
 /*==FREQUENCY DISCRETIZATION==*/
-#define Ts_s 0.01
+#define Ts_s (0.1f)
 #define Ts_ms (Ts_s * 1000)
 
 /*==LIMIT CONTROLLING INFLUENCE==*/

@@ -3,14 +3,16 @@
 void Camera::Init(){
     //INIT WINDOWS
     #if DISPLAY_MAIN_WINDOW
-    cv::namedWindow(NAME_MAIN_WINDOW, cv::WINDOW_AUTOSIZE);
+    cv::namedWindow(NAME_MAIN_WINDOW, cv::WINDOW_NORMAL);
+    cv::resizeWindow(NAME_MAIN_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
+    cv::setMouseCallback(NAME_MAIN_WINDOW, onMouse);
     #endif
 
     #if DISPLAY_BALL_MASK_WINDOW
     cv::namedWindow(NAME_BALL_MASK_WINDOW, cv::WINDOW_AUTOSIZE);
+    cv::resizeWindow(NAME_BALL_MASK_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
     #endif
 
-    cv::setMouseCallback(NAME_MAIN_WINDOW, onMouse);
 }
 
 void Camera::DebugPrintsHandler(){
@@ -30,52 +32,69 @@ void Camera::DebugPrintsHandler(){
     }
 }
 
-void Camera::Tick(){
-    static std::clock_t last_time = 0;
+void Camera::working_with_frame(){
+    *cap >> _cur_frame;
 
+    cv::cvtColor(_cur_frame, _hsv_frame, cv::COLOR_BGR2HSV);
+
+    cv::inRange(_hsv_frame, _ball_hsv_left_range_begin, _ball_hsv_left_range_end, _ball_from_hsv_mask_left);
+    cv::inRange(_hsv_frame, _ball_hsv_right_range_begin, _ball_hsv_right_range_end, _ball_from_hsv_mask_right);
+
+    _ball_conc_mask = _ball_from_hsv_mask_left | _ball_from_hsv_mask_right;
+
+    cv::erode(_ball_conc_mask, _ball_mask, _ball_kernel);
+
+    cv::inRange(_hsv_frame, _robot_hsv_range_begin, _robot_hsv_range_end, _robot_from_hsv_mask);
+}
+
+void Camera::calc_ball_pos(){
     float sum_x = 0, sum_y = 0;
+    uint16_t value_mask_pixels = 0;
 
-    float dt = 0;
-    
-    if(!FRAMES_IS_READY){
-        *cap >> _cur_frame;
-
-        cv::cvtColor(_cur_frame, _hsv_frame, cv::COLOR_BGR2HSV);
-
-        cv::inRange(_hsv_frame, _hsv_left_range_begin, _hsv_left_range_end, _from_hsv_ball_mask_left);
-        cv::inRange(_hsv_frame, _hsv_right_range_begin, _hsv_right_range_end, _from_hsv_ball_mask_right);
-
-        _conc_ball_mask = _from_hsv_ball_mask_left | _from_hsv_ball_mask_right;
-
-        cv::erode(_conc_ball_mask, _ball_mask, kernel);
-
-        uint16_t value_mask_pixels = 0;
-        for (uint16_t y = 0; y < _ball_mask.rows; y++)
-        {
-            for (uint16_t x = 0; x < _ball_mask.cols; x++)
-            {   
-                uint8_t cur_pixel = _ball_mask.at<uint8_t>(y, x);
-                if(cur_pixel == 255){
-                    sum_x += x;
-                    sum_y += y;
-                    value_mask_pixels++;
-                }                
-            }
+    for (uint16_t y = 0; y < _ball_mask.rows; y++)
+    {
+        for (uint16_t x = 0; x < _ball_mask.cols; x++)
+        {   
+            uint8_t cur_pixel = _ball_mask.at<uint8_t>(y, x);
+            if(cur_pixel == 255){
+                sum_x += x;
+                sum_y += y;
+                value_mask_pixels++;
+            }                
         }
+    }
 
-        _ball_pos_x = sum_x / value_mask_pixels;
-        _ball_pos_y = sum_y / value_mask_pixels;
+    _ball_pos_x = sum_x / value_mask_pixels;
+    _ball_pos_y = sum_y / value_mask_pixels;
+}
 
-        dt = static_cast<float>(std::clock() - last_time) * 1000;
-        last_time = std::clock();
+Camera& Camera::UpdateTime(){
+    _cur_time = std::clock();
 
-        _ball_speed_x = (_ball_pos_x - _prev_ball_pos_x) / dt;
-        _ball_speed_y = (_ball_pos_y - _prev_ball_pos_y) / dt;
+    return *this;
+}
+
+void Camera::calc_dt(){
+    _dt_ms = static_cast<float>(_cur_time - _prev_time) ;
+    _prev_time = _cur_time;
+}
+
+void Camera::calc_ball_speed(){
+    _ball_speed_x = (_ball_pos_x - _prev_ball_pos_x) / _dt_ms;
+    _ball_speed_y = (_ball_pos_y - _prev_ball_pos_y) / _dt_ms;
+}
+
+void Camera::Tick(){
+    if(!FRAMES_IS_READY){
+        working_with_frame();
+
+        calc_ball_pos();    
+        calc_dt();
+        calc_ball_speed();
 
         FRAMES_IS_READY = 1;
     }
 }
-
 
 void Camera::ShowWindows(){
     #ifdef DISPLAY

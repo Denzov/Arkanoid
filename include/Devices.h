@@ -22,13 +22,19 @@ bool FLAG_GET_MOUSE_POS = false;
 
 cv::VideoCapture cap(N_CAPTURE);
 
-cv::Scalar hsv_left_range_begin(HSV_LEFT_RANGE_RED_BEGIN, HSV_MIN_LIGHT_LEVEL, HSV_MIN_LIGHT_LEVEL);
-cv::Scalar hsv_left_range_end(HSV_LEFT_RANGE_RED_END, HSV_MAX_LIGHT_LEVEL, HSV_MAX_LIGHT_LEVEL);
+cv::Scalar ball_hsv_left_range_begin(BALL_HSV_LEFT_RANGE_BEGIN, BALL_HSV_MIN_LIGHT_LEVEL, BALL_HSV_MIN_LIGHT_LEVEL);
+cv::Scalar ball_hsv_left_range_end(BALL_HSV_LEFT_RANGE_END, BALL_HSV_MAX_LIGHT_LEVEL, BALL_HSV_MAX_LIGHT_LEVEL);
 
-cv::Scalar hsv_right_range_begin(HSV_RIGHT_RANGE_RED_BEGIN, HSV_MIN_LIGHT_LEVEL, HSV_MIN_LIGHT_LEVEL);
-cv::Scalar hsv_right_range_end(HSV_RIGHT_RANGE_RED_END, HSV_MAX_LIGHT_LEVEL, HSV_MAX_LIGHT_LEVEL);
+cv::Scalar ball_hsv_right_range_begin(BALL_HSV_RIGHT_RANGE_BEGIN, BALL_HSV_MIN_LIGHT_LEVEL, BALL_HSV_MIN_LIGHT_LEVEL);
+cv::Scalar ball_hsv_right_range_end(BALL_HSV_RIGHT_RANGE_END, BALL_HSV_MAX_LIGHT_LEVEL, BALL_HSV_MAX_LIGHT_LEVEL);
 
-cv::Mat kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(KERNEL_SIZE, KERNEL_SIZE));
+cv::Mat ball_kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(BALL_KERNEL_SIZE, BALL_KERNEL_SIZE));
+
+
+cv::Scalar robot_hsv_range_begin(ROBOT_HSV_RANGE_BEGIN, ROBOT_HSV_MIN_LIGHT_LEVEL, ROBOT_HSV_MIN_LIGHT_LEVEL);
+cv::Scalar robot_hsv_range_end(ROBOT_HSV_RANGE_END, ROBOT_HSV_MAX_LIGHT_LEVEL, ROBOT_HSV_MAX_LIGHT_LEVEL);
+
+cv::Mat robot_kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(ROBOT_KERNEL_SIZE, ROBOT_KERNEL_SIZE));
 
 CameraConnectionParams ccp{
     .onMouse = onMouse,
@@ -36,13 +42,18 @@ CameraConnectionParams ccp{
 
     .cap = &cap,
 
-    ._hsv_left_range_begin = hsv_left_range_begin,
-    ._hsv_left_range_end = hsv_left_range_end,
+    ._ball_hsv_left_range_begin = ball_hsv_left_range_begin,
+    ._ball_hsv_left_range_end = ball_hsv_left_range_end,
 
-    ._hsv_right_range_begin = hsv_right_range_begin,
-    ._hsv_right_range_end = hsv_right_range_end,
+    ._ball_hsv_right_range_begin = ball_hsv_right_range_begin,
+    ._ball_hsv_right_range_end = ball_hsv_right_range_end,
 
-    .kernel = kernel
+    ._ball_kernel = ball_kernel,
+
+    ._robot_hsv_range_begin = robot_hsv_range_begin,
+    ._robot_hsv_range_end = robot_hsv_range_end,
+
+    ._robot_kernel = robot_kernel
 };
 
 Camera camera(&ccp);
@@ -64,7 +75,12 @@ void CAMERA_WORK_IN_MAIN_LOOP(){
 
 /*==CALC FRAME FOR ADDED THREAD==*/
 void CALC_FRAME(){
+    std::clock_t timer = 0;
     while(1){
+        while(camera.UpdateTime().CUR_TIME - timer < Ts_ms)
+            ;
+        timer = camera.CUR_TIME;
+
         camera.Tick();
     }
 }

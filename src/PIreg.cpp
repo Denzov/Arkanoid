@@ -14,7 +14,6 @@ void PIreg::constrain_u(){
 
 void PIreg::passSet(float& set){
     _set = set;
-    
 }
 
 void PIreg::passCur(float& cur){
