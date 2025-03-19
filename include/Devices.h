@@ -85,9 +85,19 @@ void CALC_FRAME(){
     }
 }
 
-std::thread t(CALC_FRAME);
+std::thread t1(CALC_FRAME);
 inline void DETACH_CALC_FRAME(){
-    t.detach();
+    t1.detach();
+}
+
+/*==SENDING ROBOT INFLUENCE==*/
+void SENDING_U(){
+    SCom.Init();
+    
+    while(1){
+        // ERROR!!!
+        SCom.Transmit(camera.GetU());
+    }
 }
 
 #endif // !_SERIAL_COMMUNICATION_H

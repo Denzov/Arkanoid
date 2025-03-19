@@ -54,12 +54,13 @@ private:
     void print_receive_data() const;
     void set_preamble();
     void set_postamble();
+
 public:
-    
     SerialCommunication(SComConnectionParams *sccp) : SComConnectionParams(*sccp){}
+    
     bool Init();
     bool ReceivePacket();
-    void TransmitPacket(const uint8_t* data);
+    void Transmit(const uint8_t* data);
 };
 
 #endif //_COM_PORT_COMMUNICATION_H_

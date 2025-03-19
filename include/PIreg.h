@@ -22,7 +22,9 @@ public:
     void passSet(float& _set);
     void passCur(float& _cur);  
 
-    void tick(); 
+    float getU();
+    
+    PIreg* tick(); 
 };
 
 #endif // !_PI_REGULATOR_H_

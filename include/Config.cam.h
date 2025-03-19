@@ -50,7 +50,12 @@
 
 /*==CAMERA CALIBRATION BEGIN==*/
 #define PIXEL_TO_M 1.f
-#define DELAY_AFTER_SET_LINE_MS 100
+
+#define X_START_FIELD 0
+#define X_FINISH_FIELD 10
+#define Y_START_FIELD 0
+#define Y_FINISH_FIELD 10
+
 /*==CAMERA CALIBRATION BEGIN==*/    
 
 #endif // !_CONFIG_CAMERA_H_

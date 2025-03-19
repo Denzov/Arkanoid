@@ -18,6 +18,16 @@ enum DEBUG_KEY_STATES{
 
 typedef void (*OnMouse)(int, int, int, int, void*);
 
+struct vec2_float{
+    float x, y;
+};
+
+struct PointParams{
+    vec2_float prev_pos;
+    vec2_float pos;
+    vec2_float speed;
+};
+
 struct CameraConnectionParams{
     void (*onMouse)(int event, int x, int y, int flags, void* userData);
     bool* FLAG_GET_MOUSE_POS;
@@ -62,25 +72,38 @@ private:
             _robot_mask
             ;
     
-    float _prev_ball_pos_x = 0;
-    float _prev_ball_pos_y = 0;
-
-    float _ball_pos_x = 0;
-    float _ball_pos_y = 0;
-
-    float _ball_speed_x = 0;
-    float _ball_speed_y = 0;
+    PointParams _ball{
+        .prev_pos = {0, 0},
+        .pos = {0, 0},
+        .speed = 0
+    };
     
-
+    PointParams _robot{
+        .prev_pos = {0, 0},
+        .pos = {0, 0},
+        .speed = 0
+    };
+    
     float _dt_ms = 0;
+    
     std::clock_t _cur_time = 0;
     std::clock_t _prev_time = 0;
 
+    PIreg _pi_reg;
+
+    float _transmitted_u;
+
     void working_with_frame();
-    void calc_ball_pos();
-    void calc_dt();
-    void calc_ball_speed();
     
+    void calc_robot_pos();
+    void calc_robot_speed();
+
+    void calc_ball_pos();
+    void calc_ball_speed();
+    void calc_dt();
+    
+    void calc_pi();
+
 public:
     Camera(CameraConnectionParams* ccp) : CameraConnectionParams(*ccp){}
 
@@ -93,6 +116,9 @@ public:
     void DebugPrintsHandler();
     void Tick();
     void ShowWindows();
+    
+    uint8_t GetU();
+    
     void test();
 };
 

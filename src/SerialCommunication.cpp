@@ -74,7 +74,7 @@ bool SerialCommunication::ReceivePacket(){
 }
 
 
-void SerialCommunication::TransmitPacket(const uint8_t* data){
+void SerialCommunication::Transmit(const uint8_t* data){
     _CS = 0;
     
     for(uint8_t i = 0; i < DATA_BYTES_VALUE; i++){

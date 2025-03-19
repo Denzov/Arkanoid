@@ -20,7 +20,11 @@ void PIreg::passCur(float& cur){
     _cur = cur;
 }
 
-void PIreg::tick(){
+float PIreg::getU(){
+    return _u;
+}
+
+PIreg* PIreg::tick(){
     _err = _set - _cur;
 
     _P = _err * KP;
@@ -36,4 +40,6 @@ void PIreg::tick(){
     else{
         _u = _constrained_u;
     }
+
+    return this;
 }
