@@ -1,6 +1,8 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
+#define CALC_BT 1
+
 /*==PROTOCOL FOR COMMUNICATION BEGIN==*/
 /* PROTOCOL: |DATA|POST| */
 #define DATA_BYTES_VALUE 1
@@ -15,7 +17,7 @@
 /*==PROTOCOL FOR COMMUNICATION END*/
 
 /*==UART FOR BLUETOOTH BEGIN==*/
-#define BT_PORT 4
+#define BT_PORT 5
 #define BT_BAUDRATE 115200
 #define BT_DATASIZE 8
 #define BT_PARITY 'N'

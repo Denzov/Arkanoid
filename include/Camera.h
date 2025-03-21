@@ -13,7 +13,8 @@
 enum DEBUG_KEY_STATES{
     REQ_GET_MOUSE_POS = 'k',
     REQ_GET_BALL_POS = 'l',
-    REQ_GET_BALL_SPEED = ';'
+    REQ_GET_BALL_SPEED = ';',
+    REQ_GET_ROBOT_POS = '\'',
 };
 
 typedef void (*OnMouse)(int, int, int, int, void*);
@@ -91,7 +92,7 @@ private:
 
     PIreg _pi_reg;
 
-    float _transmitted_u;
+    float _transmitted_u = 0;
 
     void working_with_frame();
     

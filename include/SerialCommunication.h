@@ -8,7 +8,7 @@
 #include <cstdint>
 
 #include "ceSerial.h"
-#include "Config.h"
+#include "Config.bt.h"
 
 // Serial communication connection parameters
 struct SComConnectionParams{

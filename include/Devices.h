@@ -2,8 +2,8 @@
 #define _SERIAL_COMMUNICATION_H
 
 #include <thread>
-#include "SerialCommunication.h"
 #include "Camera.h"
+#include "SerialCommunication.h"
 
 /*==COMMUNITCATION==*/
 SComConnectionParams sccp{
@@ -17,6 +17,7 @@ SComConnectionParams sccp{
 SerialCommunication SCom(&sccp);
 
 /*==CAMERA==*/
+#if CALC_CAM
 void onMouse(int event, int x, int y, int flags, void* userData);
 bool FLAG_GET_MOUSE_POS = false;
 
@@ -72,8 +73,10 @@ void CAMERA_WORK_IN_MAIN_LOOP(){
     camera.DebugPrintsHandler();
     
 }
+#endif
 
 /*==CALC FRAME FOR ADDED THREAD==*/
+#if CALC_CAM
 void CALC_FRAME(){
     std::clock_t timer = 0;
     while(1){
@@ -89,15 +92,31 @@ std::thread t1(CALC_FRAME);
 inline void DETACH_CALC_FRAME(){
     t1.detach();
 }
+#endif
 
 /*==SENDING ROBOT INFLUENCE==*/
+#if CALC_BT 
 void SENDING_U(){
     SCom.Init();
-    
+    std::clock_t last_time = std::clock() ;
+    uint8_t data = 200;
     while(1){
-        // ERROR!!!
-        SCom.Transmit(camera.GetU());
+        // uint8_t data = camera.GetU();
+        if(std::clock() - last_time < 700){
+            data = 255;
+        }
+        else{
+            data = 0;
+        }
+        std::cout << std::clock() << '\n';
+        SCom.Transmit(&data);
     }
 }
+
+std::thread t2(SENDING_U);
+inline void DETACH_SENDING_U(){
+    t2.detach();
+}
+#endif
 
 #endif // !_SERIAL_COMMUNICATION_H

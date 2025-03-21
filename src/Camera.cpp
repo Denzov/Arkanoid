@@ -28,6 +28,11 @@ void Camera::DebugPrintsHandler(){
             std::cout << "ball speed x: " << _ball.speed.x << ' ';
             std::cout << "ball speed y: " << _ball.speed.y << '\n';
             break;
+        case REQ_GET_ROBOT_POS:
+            std::cout << "robot position x: " << _robot.pos.x << ' ';
+            std::cout << "robot position y: " << _robot.pos.y << '\n';
+            break;
+        
     }
 }
 
@@ -143,24 +148,27 @@ void Camera::Tick(){
 
 void Camera::ShowWindows(){
     #ifdef DISPLAY
+        if(FRAMES_IS_READY){
         #if DISPLAY_MAIN_WINDOW
-            if(FRAMES_IS_READY){                
-                cv::imshow(NAME_MAIN_WINDOW, _cur_frame);
-            }
+            cv::imshow(NAME_MAIN_WINDOW, _cur_frame);
         #endif
 
         #if DISPLAY_BALL_MASK_WINDOW
-            if(FRAMES_IS_READY){
-                cv::imshow(NAME_BALL_MASK_WINDOW, _ball_mask);
-            }
+            cv::imshow(NAME_BALL_MASK_WINDOW, _ball_mask);
         #endif
+
+        #if DISPLAY_ROBOT_MASK_WINDOW
+            cv::imshow(NAME_ROBOT_MASK_WINDOW, _robot_mask);            
+        #endif
+        }
     #endif
 
     FRAMES_IS_READY = 0;
-}
+}   
 
 uint8_t Camera::GetU(){
-    return static_cast<uint8_t>(_transmitted_u);
+    return 0;
+//    return static_cast<uint8_t>(_transmitted_u);
 }
 
 void Camera::test(){

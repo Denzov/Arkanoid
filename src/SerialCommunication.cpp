@@ -12,13 +12,13 @@ bool SerialCommunication::Init(){
     
     if (Open() == 0) {
         #ifdef DEBUG
-		std::cout<<"[INFO] Was opening port " << Port << '\n';
+		std::cout<<"[INFO] Was opening bt port " << Port << '\n';
         #endif
         return 1;
 	}
     else {
         #ifdef DEBUG
-        std::cout<<"[WARNING] PORT WAS NOT OPENING.\n";
+        std::cout<<"[WARNING] BT PORT WAS NOT OPENING.\n";
         #endif
         return 0;
     }
@@ -83,6 +83,6 @@ void SerialCommunication::Transmit(const uint8_t* data){
     }
     
     _transmit_packet.CS = _CS;
-    //print_packet();
+    print_transmit_packet();
     Write((char*)_transmit_packet.ALL, PACKET_BYTES_VALUE);
 }
