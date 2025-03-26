@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define CALC_BT 1
+#define CALC_BT 0
 
 /*==PROTOCOL FOR COMMUNICATION BEGIN==*/
 /* PROTOCOL: |DATA|POST| */

@@ -1,33 +1,53 @@
 #include "../include/Camera.h"
 
 void Camera::Init(){
+    _mat_transf = cv::getPerspectiveTransform(_trapezoid_transf, _square_transf);
+
+    PIXEL_TO_SM =  RULER_VALUE_SM / sqrt((X_START_RULER - X_END_RULER)*(X_START_RULER - X_END_RULER) + 
+            (Y_START_RULER - Y_END_RULER)*(Y_START_RULER - Y_END_RULER));
+
+    std::cout << PIXEL_TO_SM << '\n'; 
+
     //INIT WINDOWS
     #if DISPLAY_MAIN_WINDOW
     cv::namedWindow(NAME_MAIN_WINDOW, cv::WINDOW_NORMAL);
     cv::resizeWindow(NAME_MAIN_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
-    cv::setMouseCallback(NAME_MAIN_WINDOW, onMouse);
     #endif
 
     #if DISPLAY_BALL_MASK_WINDOW
     cv::namedWindow(NAME_BALL_MASK_WINDOW, cv::WINDOW_AUTOSIZE);
     cv::resizeWindow(NAME_BALL_MASK_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
     #endif
+
+    #if DISPLAY_ROBOT_MASK_WINDOW
+    cv::namedWindow(NAME_ROBOT_MASK_WINDOW, cv::WINDOW_AUTOSIZE);
+    cv::resizeWindow(NAME_ROBOT_MASK_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
+    #endif
+
+    #if DISPLAY_FIELD_WINDOW
+    cv::namedWindow(NAME_FIELD_WINDOW, cv::WINDOW_AUTOSIZE);
+    cv::resizeWindow(NAME_FIELD_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
+    cv::setMouseCallback(NAME_FIELD_WINDOW, onMouse);
+    #endif
 }
 
 void Camera::DebugPrintsHandler(){
-    char CUR_KEY = cv::waitKey(1);
+    volatile char CUR_KEY = cv::waitKey(1);
     switch(CUR_KEY){
         case REQ_GET_MOUSE_POS:
             *FLAG_GET_MOUSE_POS = 1;
             break;
+
         case REQ_GET_BALL_POS:
             std::cout << "ball position x: " << _ball.pos.x << ' ';
             std::cout << "ball position y: " << _ball.pos.y << '\n';
             break;
+
         case REQ_GET_BALL_SPEED:
             std::cout << "ball speed x: " << _ball.speed.x << ' ';
             std::cout << "ball speed y: " << _ball.speed.y << '\n';
             break;
+
         case REQ_GET_ROBOT_POS:
             std::cout << "robot position x: " << _robot.pos.x << ' ';
             std::cout << "robot position y: " << _robot.pos.y << '\n';
@@ -39,7 +59,9 @@ void Camera::DebugPrintsHandler(){
 void Camera::working_with_frame(){
     *cap >> _cur_frame;
 
-    cv::cvtColor(_cur_frame, _hsv_frame, cv::COLOR_BGR2HSV);
+    cv::warpPerspective(_cur_frame, _field, _mat_transf, _cur_frame.size());
+
+    cv::cvtColor(_field, _hsv_frame, cv::COLOR_BGR2HSV);
 
     cv::inRange(_hsv_frame, _ball_hsv_left_range_begin, _ball_hsv_left_range_end, _ball_from_hsv_mask_left);
     cv::inRange(_hsv_frame, _ball_hsv_right_range_begin, _ball_hsv_right_range_end, _ball_from_hsv_mask_right);
@@ -50,6 +72,7 @@ void Camera::working_with_frame(){
 
     cv::inRange(_hsv_frame, _robot_hsv_range_begin, _robot_hsv_range_end, _robot_from_hsv_mask);
     cv::erode(_robot_from_hsv_mask, _robot_mask, _robot_kernel);
+
 }
 
 void Camera::calc_robot_pos(){
@@ -120,7 +143,7 @@ void Camera::calc_ball_speed(){
 }
 
 void Camera::calc_pi(){
-    float ball_pos_in_field = _ball.pos.y - Y_START_FIELD;
+    float ball_pos_in_field = _ball.pos.y - 0;
 
     _pi_reg.passSet(ball_pos_in_field);
     _pi_reg.passCur(_robot.pos.y);
@@ -159,6 +182,10 @@ void Camera::ShowWindows(){
 
         #if DISPLAY_ROBOT_MASK_WINDOW
             cv::imshow(NAME_ROBOT_MASK_WINDOW, _robot_mask);            
+        #endif
+
+        #if DISPLAY_FIELD_WINDOW
+            cv::imshow(NAME_FIELD_WINDOW, _field);
         #endif
         }
     #endif

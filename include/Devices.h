@@ -19,6 +19,7 @@ SerialCommunication SCom(&sccp);
 /*==CAMERA==*/
 #if CALC_CAM
 void onMouse(int event, int x, int y, int flags, void* userData);
+
 bool FLAG_GET_MOUSE_POS = false;
 
 cv::VideoCapture cap(N_CAPTURE);
@@ -37,8 +38,18 @@ cv::Scalar robot_hsv_range_end(ROBOT_HSV_RANGE_END, ROBOT_HSV_MAX_LIGHT_LEVEL, R
 
 cv::Mat robot_kernel = getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(ROBOT_KERNEL_SIZE, ROBOT_KERNEL_SIZE));
 
+
+std::vector<cv::Point2f> square_transf = {
+    {0, 0}, {WINDOW_SIZE_WIDTH, 0}, {WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT}, {0, WINDOW_SIZE_HEIGHT}
+};
+
+std::vector<cv::Point2f> trapezoid_transf = {
+    {X_1_FIELD, Y_1_FIELD}, {X_2_FIELD, Y_2_FIELD}, {X_3_FIELD, Y_3_FIELD}, {X_4_FIELD, Y_4_FIELD}
+};
+
 CameraConnectionParams ccp{
     .onMouse = onMouse,
+
     .FLAG_GET_MOUSE_POS = &FLAG_GET_MOUSE_POS,
 
     .cap = &cap,
@@ -54,16 +65,18 @@ CameraConnectionParams ccp{
     ._robot_hsv_range_begin = robot_hsv_range_begin,
     ._robot_hsv_range_end = robot_hsv_range_end,
 
-    ._robot_kernel = robot_kernel
+    ._robot_kernel = robot_kernel,
+
+    ._trapezoid_transf = trapezoid_transf,
+    ._square_transf = square_transf
 };
 
 Camera camera(&ccp);
 
-void onMouse(int event, int x, int y, int flags, void* userData)
-{   
+void onMouse(int event, int x, int y, int flags, void* userData){
     if(FLAG_GET_MOUSE_POS){
-        std::cout << "mouse position x: " << x << ' ';
-        std::cout << "mouse position y: " << y << '\n';
+        std::cout << "mouse position in field x: " << x * PIXEL_TO_M << ' ';
+        std::cout << "mouse position in field y: " << y * PIXEL_TO_M << '\n';
         FLAG_GET_MOUSE_POS = 0;
     }
 }

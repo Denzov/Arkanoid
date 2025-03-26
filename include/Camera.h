@@ -6,6 +6,7 @@
 #include <thread>
 #include <chrono>
 #include <ctime>
+#include <cmath>
 
 #include "Config.cam.h"
 #include "PIreg.h"
@@ -31,6 +32,7 @@ struct PointParams{
 
 struct CameraConnectionParams{
     void (*onMouse)(int event, int x, int y, int flags, void* userData);
+    
     bool* FLAG_GET_MOUSE_POS;
 
     cv::VideoCapture* cap;
@@ -47,18 +49,13 @@ struct CameraConnectionParams{
     cv::Scalar _robot_hsv_range_end;
 
     cv::Mat _robot_kernel;
+    
+    std::vector<cv::Point2f> _trapezoid_transf;
+    std::vector<cv::Point2f> _square_transf;
 };
 
 class Camera : private CameraConnectionParams{
 private:
-    #if DISPLAY_MAIN_WINDOW
-        bool FLAG_DISPLAY_MAIN_WINDOW = DISPLAY_MAIN_WINDOW;
-    #endif
-
-    #if DISPLAY_BALL_MASK_WINDOW
-        bool FLAG_DISPLAY_BALL_MASK_WINDOW = DISPLAY_BALL_MASK_WINDOW;
-    #endif
-
     volatile bool FRAMES_IS_READY = 0;
 
     cv::Mat _cur_frame,
@@ -70,9 +67,12 @@ private:
             _ball_conc_mask,
             
             _robot_from_hsv_mask,
-            _robot_mask
-            ;
-    
+            _robot_mask,
+
+            _field;
+
+    cv::Mat _mat_transf;
+
     PointParams _ball{
         .prev_pos = {0, 0},
         .pos = {0, 0},
@@ -85,6 +85,8 @@ private:
         .speed = 0
     };
     
+    float PIXEL_TO_SM;
+
     float _dt_ms = 0;
     
     std::clock_t _cur_time = 0;
