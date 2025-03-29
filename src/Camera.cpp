@@ -12,6 +12,7 @@ void Camera::Init(){
     #if DISPLAY_MAIN_WINDOW
     cv::namedWindow(NAME_MAIN_WINDOW, cv::WINDOW_NORMAL);
     cv::resizeWindow(NAME_MAIN_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
+    cv::setMouseCallback(NAME_MAIN_WINDOW, onMouse);
     #endif
 
     #if DISPLAY_BALL_MASK_WINDOW
@@ -27,7 +28,6 @@ void Camera::Init(){
     #if DISPLAY_FIELD_WINDOW
     cv::namedWindow(NAME_FIELD_WINDOW, cv::WINDOW_AUTOSIZE);
     cv::resizeWindow(NAME_FIELD_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
-    cv::setMouseCallback(NAME_FIELD_WINDOW, onMouse);
     #endif
 }
 
@@ -83,7 +83,7 @@ void Camera::calc_robot_pos(){
     {
         for (uint16_t x = 0; x < _robot_mask.cols; x++)
         {   
-            uint8_t cur_pixel = _ball_mask.at<uint8_t>(y, x);
+            uint8_t cur_pixel = _robot_mask.at<uint8_t>(y, x);
             if(cur_pixel == 255){
                 sum_x += x;
                 sum_y += y;
@@ -143,10 +143,9 @@ void Camera::calc_ball_speed(){
 }
 
 void Camera::calc_pi(){
-    float ball_pos_in_field = _ball.pos.y - 0;
-
-    _pi_reg.passSet(ball_pos_in_field);
-    _pi_reg.passCur(_robot.pos.y);
+    
+    _pi_reg.passSet(_ball.pos.x);
+    _pi_reg.passCur(_robot.pos.x);
 
     _transmitted_u = _pi_reg.tick()->getU();
 }
@@ -193,9 +192,8 @@ void Camera::ShowWindows(){
     FRAMES_IS_READY = 0;
 }   
 
-uint8_t Camera::GetU(){
-    return 0;
-//    return static_cast<uint8_t>(_transmitted_u);
+int16_t Camera::GetU(){
+    return static_cast<int16_t>(_transmitted_u);
 }
 
 void Camera::test(){

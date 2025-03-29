@@ -1,11 +1,11 @@
 #ifndef _CONFIG_H_
 #define _CONFIG_H_
 
-#define CALC_BT 0
+#define CALC_BT 1
 
 /*==PROTOCOL FOR COMMUNICATION BEGIN==*/
 /* PROTOCOL: |DATA|POST| */
-#define DATA_BYTES_VALUE 1
+#define DATA_BYTES_VALUE 2
 #define PRE_BYTES_VALUE 1
 #define POST_BYTES_VALUE 1
 #define ID_BYTES_VALUE 0

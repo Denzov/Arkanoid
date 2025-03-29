@@ -1,6 +1,7 @@
 #ifndef _PI_REGULATOR_H_
 #define _PI_REGULATOR_H_
 
+#include <iostream> 
 #include "Config.pi.h"
 
 class PIreg{

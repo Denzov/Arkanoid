@@ -120,7 +120,7 @@ public:
     void Tick();
     void ShowWindows();
     
-    uint8_t GetU();
+    int16_t GetU();
     
     void test();
 };

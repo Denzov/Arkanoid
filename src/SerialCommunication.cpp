@@ -83,6 +83,6 @@ void SerialCommunication::Transmit(const uint8_t* data){
     }
     
     _transmit_packet.CS = _CS;
-    print_transmit_packet();
+    //print_transmit_packet();
     Write((char*)_transmit_packet.ALL, PACKET_BYTES_VALUE);
 }

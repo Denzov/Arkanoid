@@ -75,8 +75,8 @@ Camera camera(&ccp);
 
 void onMouse(int event, int x, int y, int flags, void* userData){
     if(FLAG_GET_MOUSE_POS){
-        std::cout << "mouse position in field x: " << x * PIXEL_TO_M << ' ';
-        std::cout << "mouse position in field y: " << y * PIXEL_TO_M << '\n';
+        std::cout << "mouse position in field x: " << x << ' ';
+        std::cout << "mouse position in field y: " << y << '\n';
         FLAG_GET_MOUSE_POS = 0;
     }
 }
@@ -111,18 +111,26 @@ inline void DETACH_CALC_FRAME(){
 #if CALC_BT 
 void SENDING_U(){
     SCom.Init();
-    std::clock_t last_time = std::clock() ;
-    uint8_t data = 200;
+
+    uint8_t sign = 0;
+    int16_t u = 0;
+
+    uint8_t data[2];
     while(1){
-        // uint8_t data = camera.GetU();
-        if(std::clock() - last_time < 700){
-            data = 255;
+        u = camera.GetU();
+        std::cout << (int)u << '\n';
+        if(u < 0){
+            u *= -u;
+            sign = 1;
         }
         else{
-            data = 0;
+            sign = 0;
         }
-        std::cout << std::clock() << '\n';
-        SCom.Transmit(&data);
+
+        data[0] = static_cast<uint8_t>(u);
+        data[1] = sign;
+
+        SCom.Transmit(data);
     }
 }
 
