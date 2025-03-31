@@ -1,10 +1,10 @@
-#ifndef _PI_REGULATOR_H_
-#define _PI_REGULATOR_H_
+#ifndef _PID_REGULATOR_H_
+#define _PID_REGULATOR_H_
 
 #include <iostream> 
 #include "Config.reg.h"
 
-class PIreg{
+class PIDreg{
 private:
     float _integrator = 0;
     
@@ -12,8 +12,11 @@ private:
     float _cur = 0;
 
     float _err = 0;
+    float _prev_err = 0;
+
     float _P = 0;
     float _I = 0;
+    float _D = 0;
 
     float _u = 0;
     float _constrained_u = 0;
@@ -25,7 +28,7 @@ public:
 
     float getU();
     
-    PIreg* tick(); 
+    PIDreg* tick(); 
 };
 
-#endif // !_PI_REGULATOR_H_
+#endif // !_PID_REGULATOR_H_

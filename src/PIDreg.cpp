@@ -1,6 +1,6 @@
-#include "../include/PIreg.h"
+#include "../include/PIDreg.h"
 
-void PIreg::constrain_u(){
+void PIDreg::constrain_u(){
     if(_u > MAX_U){
         _constrained_u = MAX_U;
     }
@@ -12,27 +12,26 @@ void PIreg::constrain_u(){
     }
 }
 
-void PIreg::passSet(float set){
+void PIDreg::passSet(float set){
     _set = set;
 }
 
-void PIreg::passCur(float cur){
+void PIDreg::passCur(float cur){
     _cur = cur;
 }
 
-float PIreg::getU(){
+float PIDreg::getU(){
     return _u;
 }
 
-PIreg* PIreg::tick(){
+PIDreg* PIDreg::tick(){
     _err = _set - _cur;
 
     _P = _err * KP;
     _I = _integrator * KI;
+    _D = (_err - _prev_err) / Ts_s;
 
-    _u = _P + _I;
-
-//    std::cout << _cur << ' ' << _set << ' ' << _P << ' ' << _I << ' ' << _u << '\n';
+    _u = _P + _I + _D;
 
     constrain_u();
 
@@ -43,6 +42,7 @@ PIreg* PIreg::tick(){
         _u = _constrained_u;
     }
 
+    _prev_err = _err;
 
     return this;
 }

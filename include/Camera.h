@@ -85,6 +85,8 @@ private:
         .speed = 0
     };
     
+    float set_robot_speed_sm = 2;
+
     float PIXEL_TO_SM;
 
     float _dt_ms = 0;
@@ -92,7 +94,8 @@ private:
     std::clock_t _cur_time = 0;
     std::clock_t _prev_time = 0;
 
-    PIreg _pi_reg;
+    PIreg _pi_reg_v;
+    PIreg _pi_reg_x;
 
     float _transmitted_u = 0;
 

@@ -6,13 +6,10 @@ void Camera::Init(){
     PIXEL_TO_SM =  RULER_VALUE_SM / sqrt((X_START_RULER - X_END_RULER)*(X_START_RULER - X_END_RULER) + 
             (Y_START_RULER - Y_END_RULER)*(Y_START_RULER - Y_END_RULER));
 
-    std::cout << PIXEL_TO_SM << '\n'; 
-
     //INIT WINDOWS
     #if DISPLAY_MAIN_WINDOW
     cv::namedWindow(NAME_MAIN_WINDOW, cv::WINDOW_NORMAL);
     cv::resizeWindow(NAME_MAIN_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
-    cv::setMouseCallback(NAME_MAIN_WINDOW, onMouse);
     #endif
 
     #if DISPLAY_BALL_MASK_WINDOW
@@ -28,6 +25,7 @@ void Camera::Init(){
     #if DISPLAY_FIELD_WINDOW
     cv::namedWindow(NAME_FIELD_WINDOW, cv::WINDOW_AUTOSIZE);
     cv::resizeWindow(NAME_FIELD_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
+    cv::setMouseCallback(NAME_FIELD_WINDOW, onMouse);
     #endif
 }
 
@@ -72,7 +70,6 @@ void Camera::working_with_frame(){
 
     cv::inRange(_hsv_frame, _robot_hsv_range_begin, _robot_hsv_range_end, _robot_from_hsv_mask);
     cv::erode(_robot_from_hsv_mask, _robot_mask, _robot_kernel);
-
 }
 
 void Camera::calc_robot_pos(){
@@ -92,8 +89,8 @@ void Camera::calc_robot_pos(){
         }
     }
 
-    _robot.pos.x = sum_x / value_mask_pixels;
-    _robot.pos.y = sum_y / value_mask_pixels;
+    _robot.pos.x = SM_TO_PIXEL * sum_x / value_mask_pixels;
+    _robot.pos.y = SM_TO_PIXEL * sum_y / value_mask_pixels;
 }
 
 void Camera::calc_ball_pos(){
@@ -113,8 +110,8 @@ void Camera::calc_ball_pos(){
         }
     }
 
-    _ball.pos.x = sum_x / value_mask_pixels;
-    _ball.pos.y = sum_y / value_mask_pixels;
+    _ball.pos.x = SM_TO_PIXEL * sum_x / value_mask_pixels;
+    _ball.pos.y = SM_TO_PIXEL * sum_y / value_mask_pixels;
 }
 
 Camera& Camera::UpdateTime(){
@@ -143,11 +140,10 @@ void Camera::calc_ball_speed(){
 }
 
 void Camera::calc_pi(){
-    
-    _pi_reg.passSet(_ball.pos.x);
-    _pi_reg.passCur(_robot.pos.x);
+    _pi_reg_v.passSet(2);
+    _pi_reg_v.passCur(_robot.speed.x);
 
-    _transmitted_u = _pi_reg.tick()->getU();
+    _transmitted_u = _pi_reg_v.tick()->getU();
 }
 
 void Camera::Tick(){
@@ -186,6 +182,8 @@ void Camera::ShowWindows(){
         #if DISPLAY_FIELD_WINDOW
             cv::imshow(NAME_FIELD_WINDOW, _field);
         #endif
+
+            cv::imshow("test", _ball_mask | _robot_mask);
         }
     #endif
 
