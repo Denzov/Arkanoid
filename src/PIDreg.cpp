@@ -27,11 +27,13 @@ float PIDreg::getU(){
 PIDreg* PIDreg::tick(){
     _err = _set - _cur;
 
-    _P = _err * KP;
-    _I = _integrator * KI;
-    _D = (_err - _prev_err) / Ts_s;
+    _P = _err * KP_V;
+    _I = _integrator * KI_V;
+    _D = (_err - _prev_err) / Ts_s * KD_V;
 
     _u = _P + _I + _D;
+
+    _u = /*30 * _u / std::abs(_u)*/ + _u;
 
     constrain_u();
 

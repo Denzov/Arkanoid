@@ -26,7 +26,8 @@ void Camera::Init(){
     cv::namedWindow(NAME_FIELD_WINDOW, cv::WINDOW_AUTOSIZE);
     cv::resizeWindow(NAME_FIELD_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
     cv::setMouseCallback(NAME_FIELD_WINDOW, onMouse);
-    #endif
+
+    #endif  
 }
 
 void Camera::DebugPrintsHandler(){
@@ -139,11 +140,19 @@ void Camera::calc_ball_speed(){
     _ball.prev_pos = _ball.pos;
 }
 
-void Camera::calc_pi(){
-    _pi_reg_v.passSet(2);
-    _pi_reg_v.passCur(_robot.speed.x);
+void Camera::calc_u(){
+    _pi_reg_x.passSet(_ball.pos.y + _ball.speed.y * 1200);
+    _pi_reg_x.passCur(_robot.pos.y);
 
-    _transmitted_u = _pi_reg_v.tick()->getU();
+    _pid_reg_v.passSet(_pi_reg_x.tick()->getU());
+
+    std::cout << _pi_reg_x.getU() << ' ';
+
+    _pid_reg_v.passCur(_robot.speed.y);
+
+    _transmitted_u = _pid_reg_v.tick()->getU();
+
+    std::cout << _pid_reg_v.getU() << '\n';
 }
 
 void Camera::Tick(){
@@ -158,7 +167,7 @@ void Camera::Tick(){
         calc_ball_speed();
         calc_robot_speed();
 
-        calc_pi();
+        calc_u();
 
         FRAMES_IS_READY = 1;
     }

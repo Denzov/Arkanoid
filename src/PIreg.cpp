@@ -32,8 +32,6 @@ PIreg* PIreg::tick(){
 
     _u = _P + _I;
 
-//    std::cout << _cur << ' ' << _set << ' ' << _P << ' ' << _I << ' ' << _u << '\n';
-
     constrain_u();
 
     if(_u == _constrained_u){

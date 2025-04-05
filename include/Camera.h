@@ -10,6 +10,7 @@
 
 #include "Config.cam.h"
 #include "PIreg.h"
+#include "PIDreg.h"
 
 enum DEBUG_KEY_STATES{
     REQ_GET_MOUSE_POS = 'k',
@@ -79,12 +80,6 @@ private:
         .speed = 0
     };
     
-    PointParams _robot{
-        .prev_pos = {0, 0},
-        .pos = {0, 0},
-        .speed = 0
-    };
-    
     float set_robot_speed_sm = 2;
 
     float PIXEL_TO_SM;
@@ -94,7 +89,7 @@ private:
     std::clock_t _cur_time = 0;
     std::clock_t _prev_time = 0;
 
-    PIreg _pi_reg_v;
+    PIDreg _pid_reg_v;
     PIreg _pi_reg_x;
 
     float _transmitted_u = 0;
@@ -107,10 +102,16 @@ private:
     void calc_ball_pos();
     void calc_ball_speed();
     void calc_dt();
-    
-    void calc_pi();
+
+    void calc_u();
 
 public:
+    PointParams _robot{
+        .prev_pos = {0, 0},
+        .pos = {0, 0},
+        .speed = 0
+    };
+
     Camera(CameraConnectionParams* ccp) : CameraConnectionParams(*ccp){}
 
     const std::clock_t& CUR_TIME = _cur_time;
