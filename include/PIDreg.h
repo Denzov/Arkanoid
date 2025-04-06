@@ -23,7 +23,7 @@ private:
 
     void constrain_u();
 public:
-    void passSet(float _set);
+    void passSet(float _set); 
     void passCur(float _cur);  
 
     float getU();

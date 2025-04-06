@@ -126,10 +126,10 @@ void SENDING_PACKET(){
         
         if(u < 0){
             u *= -1;
-            sign = 0;
+            sign = 1;
         }
         else{
-            sign = 1;
+            sign = 0;
         }
         
         data[0] = static_cast<uint8_t>(u);

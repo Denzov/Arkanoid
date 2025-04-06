@@ -6,8 +6,8 @@
 #define KI_V (1500.f)
 #define KD_V (10.f)
 
-#define KP (0.0009f)
-#define KI (0.00005f)
+#define KP (0.00135f)
+#define KI (0.00008f)
 /*==FREQUENCY DISCRETIZATION==*/
 #define Ts_s (0.05f)
 #define Ts_ms (Ts_s * 1000)

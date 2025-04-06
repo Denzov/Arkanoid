@@ -49,43 +49,59 @@
 #define BALL_HSV_RIGHT_RANGE_BEGIN 160
 #define BALL_HSV_RIGHT_RANGE_END 180
 
-#define BALL_KERNEL_SIZE 4
+#define BALL_KERNEL_SIZE 2
 /*==CAMERA BALL FILTER END==*/
 
 /*==CAMERA ROBOT FILTER BEGIN==*/
-#define ROBOT_HSV_MIN_LIGHT_LEVEL 140
+#define ROBOT_HSV_MIN_LIGHT_LEVEL 120
 #define ROBOT_HSV_MAX_LIGHT_LEVEL 255
 
 // blue
-#define ROBOT_HSV_RANGE_BEGIN 90
-#define ROBOT_HSV_RANGE_END 140
+#define ROBOT_HSV_RANGE_BEGIN 85
+#define ROBOT_HSV_RANGE_END 110
 
-#define ROBOT_KERNEL_SIZE 4
+#define ROBOT_KERNEL_SIZE 2
 /*==CAMERA ROBOT FILTER END==*/
 
 /*==CAMERA CALIBRATION BEGIN==*/
-#define X_1_FIELD 224
-#define Y_1_FIELD 0
+/*==SIDE 1 BEGIN==*/
+#define X_1_FIELD 556
+#define Y_1_FIELD 478
 
-#define X_2_FIELD 640
-#define Y_2_FIELD 0
+#define X_2_FIELD 63
+#define Y_2_FIELD 478
 
-#define X_3_FIELD 640
-#define Y_3_FIELD 480
+#define X_3_FIELD 55
+#define Y_3_FIELD 20
 
-#define X_4_FIELD 226
-#define Y_4_FIELD 480
+#define X_4_FIELD 553
+#define Y_4_FIELD 12
+/*==SIDE 1 END==*/
 
-#define X_START_RULER 0
+/*==SIDE 2 BEGIN==*/
+// #define X_1_FIELD 595
+// #define Y_1_FIELD 458
+
+// #define X_2_FIELD 112
+// #define Y_2_FIELD 451
+
+// #define X_3_FIELD 97
+// #define Y_3_FIELD 28
+
+// #define X_4_FIELD 600
+// #define Y_4_FIELD 15
+/*==SIDE 2 END==*/
+
+#define X_START_RULER 505   
 #define Y_START_RULER 0
 
-#define X_END_RULER 0
-#define Y_END_RULER 275
+#define X_END_RULER 640
+#define Y_END_RULER 0
 
-#define RULER_VALUE_SM 50.f 
+#define RULER_VALUE_SM 30.f 
 
-#define SM_TO_PIXEL (RULER_VALUE_SM / (Y_END_RULER - Y_START_RULER))
-#define SM_BEFORE_HIT 30
+#define SM_TO_PIXEL (RULER_VALUE_SM / (X_END_RULER - X_START_RULER))
+#define SM_BEFORE_HIT 20
 /*==CAMERA CALIBRATION BEGIN==*/    
 
 #endif // !_CONFIG_CAMERA_H_

@@ -10,6 +10,8 @@ void Camera::Init(){
     #if DISPLAY_MAIN_WINDOW
     cv::namedWindow(NAME_MAIN_WINDOW, cv::WINDOW_NORMAL);
     cv::resizeWindow(NAME_MAIN_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
+    cv::setMouseCallback(NAME_MAIN_WINDOW, onMouse);
+
     #endif
 
     #if DISPLAY_BALL_MASK_WINDOW
@@ -25,7 +27,6 @@ void Camera::Init(){
     #if DISPLAY_FIELD_WINDOW
     cv::namedWindow(NAME_FIELD_WINDOW, cv::WINDOW_AUTOSIZE);
     cv::resizeWindow(NAME_FIELD_WINDOW, WINDOW_SIZE_WIDTH, WINDOW_SIZE_HEIGHT);
-    cv::setMouseCallback(NAME_FIELD_WINDOW, onMouse);
 
     #endif  
 }
@@ -152,7 +153,7 @@ void Camera::calc_flag_hit(){
 }
 
 void Camera::calc_u(){
-    _pi_reg_x.passSet(_ball.pos.x + _ball.speed.x * 1200);
+    _pi_reg_x.passSet(_ball.pos.x + _ball.speed.x * 2000);
     _pi_reg_x.passCur(_robot.pos.x);
 
     _pid_reg_v.passSet(_pi_reg_x.tick()->getU());
