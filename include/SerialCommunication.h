@@ -19,6 +19,11 @@ struct SComConnectionParams{
     uint8_t StopBit;
 };
 
+enum DATA_FIELDS_STATE : uint8_t{
+    LO,
+    HI
+};
+
 union PACKET{
     uint8_t ALL[PACKET_BYTES_VALUE];
     struct{

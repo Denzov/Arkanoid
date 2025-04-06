@@ -109,7 +109,7 @@ inline void DETACH_CALC_FRAME(){
 
 /*==SENDING ROBOT INFLUENCE==*/
 #if CALC_BT 
-void SENDING_U(){
+void SENDING_PACKET(){
     SCom.Init();
 
     uint8_t sign = 0;
@@ -119,7 +119,6 @@ void SENDING_U(){
 
     std::clock_t timer = 0;
 
-    int i = 0;
     while(1){
         timer = std::clock();
 
@@ -127,20 +126,21 @@ void SENDING_U(){
         
         if(u < 0){
             u *= -1;
-            sign = 1;
-        }
-        else{
             sign = 0;
         }
-
-        data[0] = static_cast<uint8_t>(u);
-        data[1] = static_cast<uint8_t>(sign);
+        else{
+            sign = 1;
+        }
         
-        SCom.Transmit(data);
+        data[0] = static_cast<uint8_t>(u);
+
+        data[1] = static_cast<uint8_t>((camera.GetFlagHit() << 1) | sign);
+        
+        SCom.Transmit(data);    
     }
 }
     
-std::thread t2(SENDING_U);
+std::thread t2(SENDING_PACKET);
 inline void DETACH_SENDING_U(){
     t2.detach();
 }

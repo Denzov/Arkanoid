@@ -130,29 +130,36 @@ void Camera::calc_robot_speed(){
     _robot.speed.x = (_robot.pos.x - _robot.prev_pos.x) / _dt_ms;
     _robot.speed.y = (_robot.pos.y - _robot.prev_pos.y) / _dt_ms;
 
-    _robot.prev_pos = _robot.pos;
+    _robot.prev_pos.x = _robot.pos.x;
+    _robot.prev_pos.y = _robot.pos.y;
 }
 
 void Camera::calc_ball_speed(){
     _ball.speed.x = (_ball.pos.x - _ball.prev_pos.x) / _dt_ms;
     _ball.speed.y = (_ball.pos.y - _ball.prev_pos.y) / _dt_ms;
 
-    _ball.prev_pos = _ball.pos;
+    _ball.prev_pos.x = _ball.pos.x;
+    _ball.prev_pos.y = _ball.pos.y;
+}
+
+void Camera::calc_flag_hit(){
+    if(_ball.pos.y - _robot.pos.y < SM_BEFORE_HIT){
+        FLAG_HIT = 1;
+    }
+    else{
+        FLAG_HIT = 0;
+    }
 }
 
 void Camera::calc_u(){
-    _pi_reg_x.passSet(_ball.pos.y + _ball.speed.y * 1200);
-    _pi_reg_x.passCur(_robot.pos.y);
+    _pi_reg_x.passSet(_ball.pos.x + _ball.speed.x * 1200);
+    _pi_reg_x.passCur(_robot.pos.x);
 
     _pid_reg_v.passSet(_pi_reg_x.tick()->getU());
 
-    std::cout << _pi_reg_x.getU() << ' ';
-
-    _pid_reg_v.passCur(_robot.speed.y);
+    _pid_reg_v.passCur(_robot.speed.x);
 
     _transmitted_u = _pid_reg_v.tick()->getU();
-
-    std::cout << _pid_reg_v.getU() << '\n';
 }
 
 void Camera::Tick(){
@@ -167,8 +174,9 @@ void Camera::Tick(){
         calc_ball_speed();
         calc_robot_speed();
 
+        calc_flag_hit();
         calc_u();
-
+    
         FRAMES_IS_READY = 1;
     }
 }
@@ -198,6 +206,10 @@ void Camera::ShowWindows(){
 
     FRAMES_IS_READY = 0;
 }   
+
+bool Camera::GetFlagHit(){
+    return FLAG_HIT;
+}
 
 int16_t Camera::GetU(){
     return static_cast<int16_t>(_transmitted_u);

@@ -58,6 +58,7 @@ struct CameraConnectionParams{
 class Camera : private CameraConnectionParams{
 private:
     volatile bool FRAMES_IS_READY = 0;
+    volatile bool FLAG_HIT = 0;
 
     cv::Mat _cur_frame,
             _hsv_frame,
@@ -103,6 +104,7 @@ private:
     void calc_ball_speed();
     void calc_dt();
 
+    void calc_flag_hit();
     void calc_u();
 
 public:
@@ -124,6 +126,7 @@ public:
     void Tick();
     void ShowWindows();
     
+    bool GetFlagHit();
     int16_t GetU();
     
     void test();
